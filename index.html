@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Organizador Financeiro</title>
+  <style>
+    :root{--bg:#0a0a0b;--panel:#17171a;--panel2:#202024;--text:#f0f0f1;--muted:#9a9aa0;--green:#3ddc97;--red:#ff6b7a;--yellow:#ffc857;--blue:#a9adb4;--border:#2c2c30;--shadow:0 18px 45px rgba(0,0,0,.45)}
+    *{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:linear-gradient(180deg,#050506,#0c0c0e 55%,#0a0a0b);color:var(--text);min-height:100vh}
+    button,input,select{font:inherit} button{cursor:pointer}
+    .app{max-width:1380px;margin:auto;padding:28px 20px 70px}.topbar{display:flex;gap:18px;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap}
+    .title h1{margin:0;font-size:clamp(26px,4vw,40px)}.title p{margin:7px 0 0;color:var(--muted)}
+    .actions{display:flex;gap:10px;flex-wrap:wrap}.btn{border:1px solid var(--border);background:var(--panel2);color:var(--text);padding:10px 14px;border-radius:12px}.btn:hover{filter:brightness(1.12)}.btn.primary{background:var(--blue);color:#101012;border-color:transparent;font-weight:700}.btn.danger{background:transparent;color:var(--red);border-color:#673344}
+    .kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:18px}.card{background:linear-gradient(180deg,rgba(32,32,36,.96),rgba(20,20,23,.96));border:1px solid var(--border);border-radius:18px;padding:18px;box-shadow:var(--shadow)}
+    .kpi .label{font-size:13px;color:var(--muted);margin-bottom:8px}.kpi .value{font-size:27px;font-weight:800}.kpi .sub{font-size:12px;color:var(--muted);margin-top:6px}
+    .positive{color:var(--green)}.negative{color:var(--red)}.neutral{color:var(--yellow)}
+    .grid{display:grid;grid-template-columns:1.3fr .7fr;gap:16px;margin-bottom:18px}.section-title{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:14px}.section-title h2{margin:0;font-size:18px}.section-title span{color:var(--muted);font-size:13px}
+    .chart-wrap{height:260px;position:relative}.chart-wrap svg{width:100%;height:100%;overflow:visible}.axis{stroke:#3a3a40;stroke-width:1}.line{fill:none;stroke:#c7cad0;stroke-width:3}.point{fill:#c7cad0}.area{fill:url(#grad)}.chart-label{fill:#8f8f96;font-size:11px}
+    .upcoming{display:flex;flex-direction:column;gap:10px}.period-mini{padding:12px;border:1px solid var(--border);border-radius:14px;background:#151517}.period-mini .row{display:flex;justify-content:space-between;gap:12px}.period-mini strong{font-size:14px}.period-mini small{color:var(--muted)}
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.toolbar input,.toolbar select,.form-grid input,.form-grid select{background:#141416;color:var(--text);border:1px solid var(--border);padding:10px 12px;border-radius:10px;outline:none}.toolbar input:focus,.toolbar select:focus,.form-grid input:focus,.form-grid select:focus{border-color:var(--blue)}
+    .periods{display:flex;flex-direction:column;gap:12px}.period{border:1px solid var(--border);border-radius:16px;background:#151517;overflow:hidden}.period-head{display:grid;grid-template-columns:150px repeat(4,1fr) 38px;gap:10px;align-items:center;padding:14px 16px;background:#1c1c1f;cursor:pointer}.period-head:hover{background:#212124}.period-head .metric small{display:block;color:var(--muted);font-size:11px}.period-head .metric b{font-size:14px}.toggle{background:transparent;border:0;color:var(--muted);font-size:20px}.period-body{padding:14px 16px;display:none}.period.open .period-body{display:block}
+    .transactions{display:grid;grid-template-columns:1fr 120px 110px 44px;gap:8px;align-items:center}.tx{display:contents}.tx input,.tx select{width:100%;background:#121214;color:var(--text);border:1px solid var(--border);border-radius:9px;padding:9px}.icon-btn{border:1px solid var(--border);background:#1a1a1d;color:var(--text);border-radius:9px;height:38px}.icon-btn:hover{background:#242428}.add-line{margin-top:12px}
+    .income-row{display:grid;grid-template-columns:1fr 160px;gap:8px;margin-bottom:14px}.income-row input{background:#121214;color:var(--text);border:1px solid var(--border);border-radius:9px;padding:9px}
+    .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.76);display:none;align-items:center;justify-content:center;padding:20px;z-index:20}.modal-backdrop.show{display:flex}.modal{width:min(620px,100%);background:#18181b;border:1px solid var(--border);border-radius:18px;padding:20px;box-shadow:var(--shadow)}.modal h3{margin-top:0}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.form-grid .full{grid-column:1/-1}.modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}
+    .footer-note{color:var(--muted);font-size:12px;margin-top:18px}.empty{color:var(--muted);padding:18px;text-align:center;border:1px dashed var(--border);border-radius:12px}
+    @media(max-width:950px){.kpis{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}.period-head{grid-template-columns:120px repeat(2,1fr) 38px}.period-head .hide-sm{display:none}}@media(max-width:620px){.kpis{grid-template-columns:1fr}.period-head{grid-template-columns:1fr 1fr 38px}.period-head .metric:nth-child(n+4){display:none}.transactions{grid-template-columns:1fr 100px 44px}.transactions .category{display:none}.form-grid{grid-template-columns:1fr}.income-row{grid-template-columns:1fr}.app{padding:18px 12px 50px}}
+  </style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="title"><h1>Organizador Financeiro</h1><p>Planejamento quinzenal baseado na sua planilha de 2026</p></div>
+    <div class="actions"><button class="btn" id="exportBtn">Exportar backup</button><button class="btn" id="importBtn">Importar backup</button><button class="btn danger" id="resetBtn">Restaurar planilha</button><button class="btn primary" id="newExpenseBtn">+ Nova despesa</button></div>
+  </div>
+
+  <section class="kpis" id="kpis"></section>
+
+  <section class="grid">
+    <div class="card"><div class="section-title"><h2>Evolução do saldo</h2><span>Saldo final por quinzena</span></div><div class="chart-wrap" id="chart"></div></div>
+    <div class="card"><div class="section-title"><h2>Próximas quinzenas</h2><span id="nextLabel"></span></div><div class="upcoming" id="upcoming"></div></div>
+  </section>
+
+  <section class="card">
+    <div class="section-title"><div><h2>Planejamento quinzenal</h2><span>Edite receitas e despesas; os saldos seguintes são recalculados automaticamente.</span></div><div class="toolbar"><input id="search" placeholder="Buscar categoria..."><select id="filter"><option value="all">Todas</option><option value="positive">Saldo positivo</option><option value="negative">Saldo negativo</option></select></div></div>
+    <div class="periods" id="periods"></div>
+    <div class="footer-note">Os dados ficam salvos somente neste navegador usando armazenamento local. Use “Exportar backup” para gerar uma cópia em JSON.</div>
+  </section>
+</div>
+
+<div class="modal-backdrop" id="modal">
+  <div class="modal"><h3>Adicionar despesa</h3><div class="form-grid">
+    <label class="full">Quinzena<select id="mPeriod"></select></label>
+    <label>Categoria<input id="mCategory" placeholder="Ex.: Mercado"></label>
+    <label>Valor (R$)<input id="mAmount" type="number" min="0" step="0.01" placeholder="0,00"></label>
+    <label class="full">Descrição<input id="mDescription" placeholder="Opcional"></label>
+  </div><div class="modal-actions"><button class="btn" id="cancelModal">Cancelar</button><button class="btn primary" id="saveExpense">Adicionar</button></div></div>
+</div>
+<input type="file" id="fileInput" accept="application/json" hidden>
+
+<script>
+const SEED = [
+  {date:'2026-07-15',opening:15930,income:4750,expenses:[['Caixa',1630],['Cartão Nubank',5200],['Cartão Itaú',2265],['Cartão Amazon',1775],['Tim',60],['Luz Apto',127],['Seguro Residencial',50]]},
+  {date:'2026-07-30',income:4560,expenses:[['Combinaqui',40],['Condomínio',890],['Redfox',90]]},
+  {date:'2026-08-15',opening:12900,income:5920,expenses:[['Caixa',1630],['Cartão Nubank',4500],['Cartão Itaú',2185],['Cartão Amazon',810],['Tim',60],['Luz Apto',130],['Seguro Residencial',50]]},
+  {date:'2026-08-30',income:4500,expenses:[['Combinaqui',40],['Condomínio',650],['Redfox',90]]},
+  {date:'2026-09-15',income:4700,expenses:[['Caixa',1630],['Cartão Nubank',3000],['Cartão Itaú',2100],['Cartão Amazon',800],['Tim',60],['Luz Apto',130],['Seguro Residencial',50]]},
+  {date:'2026-09-30',income:0,expenses:[['Combinaqui',40],['Redfox',90]]},
+  {date:'2026-10-15',income:0,expenses:[['Caixa',1630],['Seguro Residencial',50]]},
+  {date:'2026-10-30',income:0,expenses:[['Combinaqui',40],['Redfox',90]]},
+  {date:'2026-11-15',income:0,expenses:[['Caixa',1630],['Seguro Residencial',50]]},
+  {date:'2026-11-30',income:0,expenses:[['Combinaqui',40],['Redfox',90]]},
+  {date:'2026-12-15',income:0,expenses:[['Caixa',1630],['Seguro Residencial',50]]},
+  {date:'2026-12-30',income:0,expenses:[['Combinaqui',40],['Redfox',90]]}
+].map((p,i)=>({...p,id:'p'+i,expenses:p.expenses.map((e,j)=>({id:`e${i}_${j}`,category:e[0],amount:e[1],description:''}))}));
+
+const clone=x=>JSON.parse(JSON.stringify(x));
+let data=load(); let openId=null;
+function load(){try{return JSON.parse(localStorage.getItem('financePlan2026'))||clone(SEED)}catch{return clone(SEED)}}
+function save(){localStorage.setItem('financePlan2026',JSON.stringify(data))}
+function money(v){return (Number(v)||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}
+function shortDate(d){return new Date(d+'T12:00:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})}
+function calc(){let prev=null;return data.map((p,i)=>{const expense=p.expenses.reduce((s,e)=>s+(Number(e.amount)||0),0);const opening=(p.opening!=null&&p.opening!=='')?Number(p.opening):(prev??0);const final=opening+(Number(p.income)||0)+(Number(p.extra)||0)-expense;prev=final;return {...p,openingCalc:opening,totalExpense:expense,final}})}
+function render(){const rows=calc(); renderKpis(rows);renderChart(rows);renderUpcoming(rows);renderPeriods(rows);populateModal(rows)}
+function renderKpis(rows){const totalIncome=rows.reduce((s,p)=>s+(Number(p.income)||0)+(Number(p.extra)||0),0),totalExpense=rows.reduce((s,p)=>s+p.totalExpense,0),last=rows.at(-1)?.final||0,current=rows.find(p=>p.date>='2026-09-08')||rows[0];document.getElementById('kpis').innerHTML=`
+<div class="card kpi"><div class="label">Saldo projetado final</div><div class="value ${last>=0?'positive':'negative'}">${money(last)}</div><div class="sub">Em ${shortDate(rows.at(-1).date)}</div></div>
+<div class="card kpi"><div class="label">Receitas planejadas</div><div class="value positive">${money(totalIncome)}</div><div class="sub">Julho a dezembro/2026</div></div>
+<div class="card kpi"><div class="label">Despesas planejadas</div><div class="value negative">${money(totalExpense)}</div><div class="sub">Todas as categorias</div></div>
+<div class="card kpi"><div class="label">Próxima quinzena</div><div class="value ${current.final>=0?'positive':'negative'}">${money(current.final)}</div><div class="sub">Saldo após ${shortDate(current.date)}</div></div>`}
+function renderChart(rows){const w=760,h=220,pad=34;const vals=rows.map(r=>r.final);const min=Math.min(...vals,0),max=Math.max(...vals,0),range=max-min||1;const x=i=>pad+i*(w-2*pad)/(rows.length-1),y=v=>h-pad-(v-min)*(h-2*pad)/range;let line=rows.map((r,i)=>`${i?'L':'M'} ${x(i)} ${y(r.final)}`).join(' ');let area=`M ${x(0)} ${h-pad} `+rows.map((r,i)=>`L ${x(i)} ${y(r.final)}`).join(' ')+` L ${x(rows.length-1)} ${h-pad} Z`;let labels=rows.map((r,i)=>`<text x="${x(i)}" y="${h-10}" text-anchor="middle" class="chart-label">${shortDate(r.date)}</text>`).join('');let pts=rows.map((r,i)=>`<circle class="point" cx="${x(i)}" cy="${y(r.final)}" r="4"><title>${shortDate(r.date)}: ${money(r.final)}</title></circle>`).join('');document.getElementById('chart').innerHTML=`<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><defs><linearGradient id="grad" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#c7cad0" stop-opacity=".22"/><stop offset="100%" stop-color="#c7cad0" stop-opacity="0"/></linearGradient></defs><line x1="${pad}" y1="${y(0)}" x2="${w-pad}" y2="${y(0)}" class="axis"/><path d="${area}" class="area"/><path d="${line}" class="line"/>${pts}${labels}</svg>`}
+function renderUpcoming(rows){const future=rows.filter(r=>r.date>='2026-09-08').slice(0,4);document.getElementById('nextLabel').textContent=future.length?`A partir de ${shortDate(future[0].date)}`:'';document.getElementById('upcoming').innerHTML=future.map(p=>`<div class="period-mini"><div class="row"><strong>${shortDate(p.date)}</strong><strong class="${p.final>=0?'positive':'negative'}">${money(p.final)}</strong></div><div class="row"><small>Receitas ${money(p.income)}</small><small>Despesas ${money(p.totalExpense)}</small></div></div>`).join('')||'<div class="empty">Nenhuma quinzena futura.</div>'}
+function renderPeriods(rows){const q=document.getElementById('search').value.toLowerCase(),filter=document.getElementById('filter').value;const html=rows.filter(p=>filter==='all'||(filter==='positive'?p.final>=0:p.final<0)).map(p=>{const visible=p.expenses.filter(e=>!q||e.category.toLowerCase().includes(q)||e.description.toLowerCase().includes(q));return `<div class="period ${openId===p.id?'open':''}" data-id="${p.id}"><div class="period-head" onclick="togglePeriod('${p.id}')"><div><strong>${shortDate(p.date)}</strong><div style="color:var(--muted);font-size:12px">${new Date(p.date+'T12:00:00').toLocaleDateString('pt-BR',{month:'long',year:'numeric'})}</div></div><div class="metric"><small>Saldo inicial</small><b>${money(p.openingCalc)}</b></div><div class="metric"><small>Receitas</small><b class="positive">${money(p.income)}</b></div><div class="metric hide-sm"><small>Despesas</small><b class="negative">${money(p.totalExpense)}</b></div><div class="metric hide-sm"><small>Saldo final</small><b class="${p.final>=0?'positive':'negative'}">${money(p.final)}</b></div><button class="toggle">⌄</button></div><div class="period-body"><div class="income-row"><label>Receita da quinzena<input type="number" step="0.01" value="${p.income}" onchange="changeIncome('${p.id}',this.value)"></label>${p.opening!=null?`<label>Saldo inicial manual<input type="number" step="0.01" value="${p.opening}" onchange="changeOpening('${p.id}',this.value)"></label>`:`<label>Saldo inicial automático<input disabled value="${money(p.openingCalc)}"></label>`}</div><div class="income-row"><label>Valores extras recebidos<input type="number" step="0.01" value="${p.extra||0}" onchange="changeExtra('${p.id}',this.value)"></label></div><div class="transactions">${visible.map(e=>`<div class="tx"><input value="${escapeHtml(e.category)}" onchange="changeExpense('${p.id}','${e.id}','category',this.value)"><input type="number" step="0.01" value="${e.amount}" onchange="changeExpense('${p.id}','${e.id}','amount',this.value)"><input class="category" value="${escapeHtml(e.description)}" placeholder="Descrição" onchange="changeExpense('${p.id}','${e.id}','description',this.value)"><button class="icon-btn" onclick="deleteExpense('${p.id}','${e.id}')">×</button></div>`).join('')||'<div class="empty" style="grid-column:1/-1">Nenhuma despesa encontrada.</div>'}</div><div class="add-line"><button class="btn" onclick="openModal('${p.id}')">+ Adicionar despesa nesta quinzena</button></div></div></div>`}).join('');document.getElementById('periods').innerHTML=html||'<div class="empty">Nenhuma quinzena atende ao filtro.</div>'}
+function escapeHtml(s=''){return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+window.togglePeriod=id=>{openId=openId===id?null:id;render()};
+window.changeIncome=(id,v)=>{data.find(p=>p.id===id).income=Number(v)||0;save();render()};
+window.changeOpening=(id,v)=>{data.find(p=>p.id===id).opening=Number(v)||0;save();render()};
+window.changeExtra=(id,v)=>{data.find(p=>p.id===id).extra=Number(v)||0;save();render()};
+window.changeExpense=(pid,eid,key,v)=>{const e=data.find(p=>p.id===pid).expenses.find(x=>x.id===eid);e[key]=key==='amount'?(Number(v)||0):v;save();render()};
+window.deleteExpense=(pid,eid)=>{const p=data.find(x=>x.id===pid);p.expenses=p.expenses.filter(x=>x.id!==eid);save();render()};
+function populateModal(rows){document.getElementById('mPeriod').innerHTML=rows.map(p=>`<option value="${p.id}">${shortDate(p.date)}</option>`).join('')}
+function openModal(pid){document.getElementById('modal').classList.add('show');if(pid)document.getElementById('mPeriod').value=pid;document.getElementById('mCategory').focus()}window.openModal=openModal;
+function closeModal(){document.getElementById('modal').classList.remove('show');document.getElementById('mCategory').value='';document.getElementById('mAmount').value='';document.getElementById('mDescription').value=''}
+document.getElementById('newExpenseBtn').onclick=()=>openModal();document.getElementById('cancelModal').onclick=closeModal;document.getElementById('modal').onclick=e=>{if(e.target.id==='modal')closeModal()};document.getElementById('saveExpense').onclick=()=>{const p=data.find(x=>x.id===document.getElementById('mPeriod').value),category=document.getElementById('mCategory').value.trim(),amount=Number(document.getElementById('mAmount').value)||0;if(!category||amount<=0){alert('Informe uma categoria e um valor maior que zero.');return}p.expenses.push({id:'e'+Date.now(),category,amount,description:document.getElementById('mDescription').value.trim()});save();openId=p.id;closeModal();render()};
+document.getElementById('search').oninput=render;document.getElementById('filter').onchange=render;
+document.getElementById('resetBtn').onclick=()=>{if(confirm('Restaurar os valores originais importados da planilha?')){data=clone(SEED);save();openId=null;render()}};
+document.getElementById('exportBtn').onclick=()=>{const blob=new Blob([JSON.stringify({version:1,exportedAt:new Date().toISOString(),data},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='backup-financeiro-2026.json';a.click();URL.revokeObjectURL(a.href)};
+document.getElementById('importBtn').onclick=()=>document.getElementById('fileInput').click();document.getElementById('fileInput').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const obj=JSON.parse(r.result);if(!Array.isArray(obj.data))throw 0;data=obj.data;save();render();alert('Backup importado com sucesso.')}catch{alert('Arquivo de backup inválido.')}};r.readAsText(f);e.target.value=''};
+render();
+</script>
+</body>
+</html>
