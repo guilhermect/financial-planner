@@ -36,6 +36,14 @@
     <label class="full">Descrição<input id="mDescription" placeholder="Opcional"></label>
   </div><div class="modal-actions"><button class="btn" id="cancelModal">Cancelar</button><button class="btn primary" id="saveExpense">Adicionar</button></div></div>
 </div>
+<div class="modal-backdrop" id="replicateModal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="replicateModalTitle">
+    <h3 id="replicateModalTitle">Replicar despesas</h3>
+    <p class="replicate-note">As despesas atuais da quinzena de destino serão substituídas.</p>
+    <div class="form-grid"><label class="full">Quinzena de destino<select id="replicateDestination"></select></label></div>
+    <div class="modal-actions"><button class="btn" id="cancelReplicate">Cancelar</button><button class="btn primary" id="confirmReplicate">Replicar</button></div>
+  </div>
+</div>
 <input type="file" id="fileInput" accept="application/json" hidden>
 
 <script src="script.js"></script>
