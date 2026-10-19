@@ -10,10 +10,16 @@
 <body>
 <div class="app">
   <div class="topbar">
-    <div class="title"><h1>Organizador Financeiro</h1><p>Planejamento quinzenal baseado na sua planilha de 2026</p></div>
+    <div class="title"><h1>Organizador Financeiro</h1><p>Planejamento quinzenal por ano</p></div>
     <div class="actions"><button class="btn" id="exportBtn">Exportar backup</button><button class="btn" id="importBtn">Importar backup</button><button class="btn danger" id="resetBtn">Restaurar planilha</button><button class="btn primary" id="newExpenseBtn">+ Nova despesa</button></div>
   </div>
 
+  <nav class="year-tabs" role="tablist" aria-label="Ano do planejamento">
+    <button class="year-tab active" id="year-2026" role="tab" aria-selected="true" aria-controls="yearContent" data-year="2026">2026</button>
+    <button class="year-tab" id="year-2027" role="tab" aria-selected="false" aria-controls="yearContent" data-year="2027">2027</button>
+  </nav>
+
+  <div id="yearContent" role="tabpanel" aria-labelledby="year-2026">
   <section class="kpis" id="kpis"></section>
 
   <section class="grid">
@@ -26,6 +32,7 @@
     <div class="periods" id="periods"></div>
     <div class="footer-note">Os dados ficam salvos somente neste navegador usando armazenamento local. Use “Exportar backup” para gerar uma cópia em JSON.</div>
   </section>
+  </div>
 </div>
 
 <div class="modal-backdrop" id="modal">

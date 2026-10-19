@@ -14,7 +14,8 @@ Para servir localmente por HTTP (recomendado):
 
 ## O que já funciona
 
-- Dados iniciais importados da planilha de julho a dezembro/2026.
+- Dados iniciais de julho a dezembro/2026 e projeções de janeiro a abril/2027, baseadas nas quinzenas com receitas mais recentes de 2026.
+- Abas anuais para alternar entre 2026 e 2027.
 - Saldo encadeado entre quinzenas.
 - Edição de receitas e despesas.
 - Inclusão e exclusão de despesas.
