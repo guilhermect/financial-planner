@@ -21,7 +21,7 @@ const SEED_2027=Array.from({length:4},(_,index)=>{const month=String(index+1).pa
 const ALL_SEED=[...SEED,...SEED_2027];
 
 let activeYear='2026'; let data=load(); let openId=null; let replicateSourceId=null;
-function withSeedPeriods(periods){const ids=new Set(periods.map(period=>period.id));return [...periods,...ALL_SEED.filter(period=>!ids.has(period.id)).map(clone)].sort((first,second)=>first.date.localeCompare(second.date))}
+function withSeedPeriods(periods){const normalized=periods.map(period=>period.date==='2027-02-30'?{...period,date:'2027-02-28'}:period),ids=new Set(normalized.map(period=>period.id));return [...normalized,...ALL_SEED.filter(period=>!ids.has(period.id)).map(clone)].sort((first,second)=>first.date.localeCompare(second.date))}
 function load(){try{const stored=JSON.parse(localStorage.getItem('financePlan2026'));return Array.isArray(stored)?withSeedPeriods(stored):clone(ALL_SEED)}catch{return clone(ALL_SEED)}}
 function save(){localStorage.setItem('financePlan2026',JSON.stringify(data))}
 function money(v){return (Number(v)||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}
